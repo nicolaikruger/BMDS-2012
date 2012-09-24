@@ -19,8 +19,28 @@ public class HelloServiceClient {
         String endpointAddress = "http://localhost:8085/handin_2/";
         Service webservice = Service.create(service);
         webservice.addPort(port, SOAPBinding.SOAP11HTTP_BINDING, endpointAddress);
-
-        try {
+        Stuff(webservice, port, "GetAttendantTasks", "rao", "3");
+        
+        String taskXml = "<task id=\"kolera\" name=\"lab exercises 01\" date=\"03-09-2012\" status=\"not-executed\"><description>Lab exercises for 1st week.</description><attendants>rao</attendants></task>";
+  
+        System.out.println("Create task...");
+        Stuff(webservice, port, "CreateTask", taskXml, "3");
+        System.out.println("");
+        
+        System.out.println("Get tasks...");
+        Stuff(webservice, port, "GetAttendantTasks", "rao", "3");
+        System.out.println("");
+        
+        System.out.println("Delete...");
+        Stuff(webservice, port, "DeleteTask", "kolera", "3");
+        System.out.println("");
+        
+        System.out.println("Get tasks...");
+        Stuff(webservice, port, "GetAttendantTasks", "rao", "3");
+    }
+    
+    private static void Stuff(Service webservice, QName port, String method, String arg0, String arg1){
+     try {
             MessageFactory factory =
                     MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
             SOAPMessage request = factory.createMessage();
@@ -29,19 +49,19 @@ public class HelloServiceClient {
             SOAPBody body = envelope.getBody();
             SOAPElement content = body.addBodyElement(
                     new QName("http://smds-e2012.itu.dk/webservices/basicsample",
-                    "GetAttendantTasks",
+                    method,
                     "itu"));
 
             SOAPElement name;
 
             name = content.addChildElement("arg0");
-            name.setTextContent("Rao");
+            name.setTextContent(arg0);
             
             name = content.addChildElement("arg1");
-            name.setTextContent("1");
+            name.setTextContent(arg1);
 
 
-            Utils.print(request);
+            //Utils.print(request);
 
             Dispatch<SOAPMessage> dispatch =
                     webservice.createDispatch(port, SOAPMessage.class,
@@ -49,7 +69,7 @@ public class HelloServiceClient {
             SOAPMessage response = dispatch.invoke(request);
             String text = response.getSOAPBody().getTextContent();
 
-            Utils.print(response);
+            //Utils.print(response);
 
             System.out.println(text);
 
@@ -59,6 +79,7 @@ public class HelloServiceClient {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
+        }   
+        
     }
 }
