@@ -4,3 +4,5 @@
 *.jar
 *.war
 *.ear
+/handin_2/nbproject/private/
+/handin_2/build/
