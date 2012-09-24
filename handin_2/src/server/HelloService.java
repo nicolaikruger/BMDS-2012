@@ -12,6 +12,31 @@ public class HelloService
     public String helloOperation(String name) {
             return "Hello " + name + "!";
     }
+    
+    @WebMethod()
+    public String GetAttendantTasks(String attendantID, int serviceOption) {
+        switch(serviceOption) {
+            case 1:
+                System.out.println("SOAP!");
+                return SOAPServices.GetAttendantTasks(attendantID);
+            case 2:
+                return "F U BITCH!";
+            case 3: 
+                return "Morten er en skildpade\n Og dybt forelsket en i havmåge... (som hedder Gertrud)";
+        }
+        
+        return "";
+    }
+    
+    @WebMethod()
+    public void CreateTask(String taskXML, int serviceOption) {
+        
+    }
+    
+    @WebMethod()
+    public void DeleteTask(String taskID, int serviceOption) {
+        
+    }
     /**
     * Publish the service end point.
     * @param args not used.
