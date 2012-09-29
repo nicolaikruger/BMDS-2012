@@ -10,6 +10,8 @@ public class Connection {
 
 	DataOutputStream out; 
 	DataInputStream in;
+	Socket sock;
+	ServerSocket servSock;
 
 	/**
 	 * constructor for client socket
@@ -18,7 +20,7 @@ public class Connection {
 	 */
 	public Connection(String addr, int port) {
 		try {
-			Socket sock = new Socket(addr, port);
+			sock = new Socket(addr, port);
 			out = new DataOutputStream(sock.getOutputStream());
 			in= new DataInputStream(sock.getInputStream());
 		} catch(IOException e) {
@@ -27,13 +29,14 @@ public class Connection {
 	}
 
 	/**
-	 * constructor for server socket
+	 * constructor for server socket.
+	 * This method blocks
 	 * @param port port of the server to connect to
 	 */
 	public Connection(int port) {
 		try {
-			ServerSocket servSock = new ServerSocket(port);
-			Socket sock = servSock.accept();
+			servSock = new ServerSocket(port);
+			sock = servSock.accept();
 			in = new DataInputStream(sock.getInputStream());
 			out = new DataOutputStream(sock.getOutputStream());
 		} catch(IOException e) {
@@ -41,6 +44,10 @@ public class Connection {
 		}
 	}
 
+	/**
+	 * transmits 'message' on the connection
+	 * @param message message to be transmitted
+	 */
 	public void writeString(String message){
 		try {
 			out.writeUTF(message);
@@ -62,8 +69,10 @@ public class Connection {
 
 	public void kill(){
 		try {
-			out.close();
-			in.close();
+			if (servSock != null) {
+				servSock.close();
+			}
+			sock.close();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

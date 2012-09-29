@@ -26,9 +26,17 @@ public class User{
     
     public User(){}
     
+    public String getId() {
+	return id;
+    }
+
     @Override
     public String toString() {
 	return id + ", " + name + ", " + password;
+    }
+
+    public String getName(){
+	return name;
     }
 
     public User(String id, String name, String password){

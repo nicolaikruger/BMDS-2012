@@ -25,8 +25,9 @@ public class Task{
     private String name;    
     @XmlElement(name="description")
     private String description;    
-    @XmlElement(name="attendant")
-    public Attendant attendant;  
+    @XmlElement(name="attendants")
+    //public Attendant attendants;  
+    public String attendants;
     
     public Task(){}
     
@@ -49,7 +50,7 @@ public class Task{
     public void setStatus(String status){
         this.status = status;
     }
-    public void setAttendant(Attendant attendant){
-        this.attendant = attendant;
-    }
+   // public void setAttendant(Attendant attendant){
+   //     this.attendants = attendant;
+   // }
 }

@@ -1,3 +1,14 @@
+/*
+This is the "web service"
+It handles expected errors, ie. errors such as 
++"you tryed to add a task with the id of an existing one".
+However, it fails miserably on errors such as
++"you tryed to add a task, but provided data
++that could not be unmarshalled into a task object"
+Currently the server class is responsible for handling connections, managing the persistance store, and verifyring data.
+Idealy, it would only handle connections and connection errors, and a seperate store module would handle persistance and integrity.
+*/
+
 package dk.itu.bmds.teamkolera.src.proj_main;
 
 import java.net.ServerSocket;
@@ -8,7 +19,7 @@ import dk.itu.bmds.teamkolera.src.lib.*;
 
 public class TaskManagerTCPServer {
 	Calendar cal;
-	Connection con = new Connection(4444);
+	Connection con;
 
 	public TaskManagerTCPServer(String fPath) {
 		cal = initRead(fPath);
@@ -16,43 +27,91 @@ public class TaskManagerTCPServer {
 	}
 
 	private void run() {
-		System.out.println("Server listens");
-		String comm = (con.readString());
+		while(true) {
+			System.out.println("Server listens");
+			initListen();
+			String comm = (con.readString());
 
-		switch (comm) {
-			case "PUT": 	put();
-				    	break;
-			case "POST": 	post();
-				     	break;
-			case "GET": 	get();
-				    	break;
-			case "DELETE":	del();
-				       	break;
-			default:
-					con.writeString("WHATYOUSAY?");
-					break;
+			switch (comm) {
+				case "PUT": 	put();
+						break;
+				case "POST": 	post();
+						break;
+				case "GET": 	get();
+						break;
+				case "DELETE":	del();
+						break;
+				default:
+						con.writeString("WHATYOUSAY?");
+						break;
+			}
 		}
 	}	
 
 	private void put(){
-		System.out.println("PUT");
+		System.out.println("'PUT' recieved");
+		con.writeString("PUT");
+		String xml = con.readString();
+		Task t = Marshall.unMarshall(xml, Task.class);
+		String msg = cal.replace(t);
+		save();
+		con.writeString(msg);
 	}
 
 	private void get(){
-		System.out.println("GET");
+		System.out.println("'GET' recieved");
+		con.writeString("GET");
+		String xml = con.readString();
+		String msg;
+
+		User u = Marshall.unMarshall(xml, User.class); //should take an id rather than a user
+		TaskList ret = cal.userSched(u);
+		if(ret.tasks.isEmpty()) {
+			msg = "user has no tasks";
+		} else {
+			msg = Marshall.marshall(ret);
+		}
+		con.writeString(msg);
 	}
 
 	private void post(){
+		System.out.println("'POST' recieved");
 		con.writeString("POST");
 		String xml = con.readString();
+		String msg;
 
 		Task t = Marshall.unMarshall(xml, Task.class);
-		cal.tasks.add(t);
-		save();
+		if (cal.addTask(t)) {
+			save();
+			msg = "Task added";
+		} else {
+			msg = "non critical faliure: task id allready in use";
+		}
+
+		con.writeString(msg);
 	}
 
 	private void del(){
-		System.out.println("DELETE");
+		System.out.println("'DELETE' recieved");;
+		con.writeString("DELETE");
+		String xml = con.readString();
+		Task t = Marshall.unMarshall(xml, Task.class);
+		String msg;
+		if(cal.del(t)) {
+			msg = "task deleted";
+			save();
+		} else {
+			msg = "task not found";
+		}
+		con.writeString(msg);
+	}
+
+	private void initListen(){
+		if (con != null) {
+			con.kill();
+		}
+
+		con = new Connection(4444);
 	}
 
 	private Calendar initRead(String fPath){

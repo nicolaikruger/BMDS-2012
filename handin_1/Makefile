@@ -1,18 +1,18 @@
 JFLAGS = -sourcepath ./ -d bin
 JC = javac
 .SUFFIXES: .java .class
-.java.class:
-	$(JC) $(JFLAGS) $*.java
 
-default: main_project
+default: main
 
-main_project: lib
-		$(JC) $(JFLAGS) dk/itu/bmds/teamkolera/src/proj_main/*
+main: lib
+	$(JC) $(JFLAGS) dk/itu/bmds/teamkolera/src/proj_main/*
 
 lib: taskmanager
-		$(JC) $(JFLAGS) dk/itu/bmds/teamkolera/src/taskmanager/*
+	$(JC) $(JFLAGS) dk/itu/bmds/teamkolera/src/lib/*
 
-taskmanager:
-		$(JC) $(JFLAGS) dk/itu/bmds/teamkolera/src/lib/*
+taskmanager: 
+	$(JC) $(JFLAGS) dk/itu/bmds/teamkolera/src/taskmanager/*
 
-clean: rm -r bin/*
+
+clean: 
+	rm -r bin/*

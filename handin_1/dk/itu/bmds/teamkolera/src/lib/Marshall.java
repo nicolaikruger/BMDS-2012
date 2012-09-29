@@ -2,7 +2,7 @@ package dk.itu.bmds.teamkolera.src.lib;
 
 import javax.xml.bind.*;
 import java.io.*;
-import dk.itu.bmds.teamkolera.src.taskmanager.*; //this probably means this class doesn't belong here.. oh well
+import dk.itu.bmds.teamkolera.src.taskmanager.*; //for the testing in main()
 
 public class Marshall {
 	public static String marshall(Object o) {
