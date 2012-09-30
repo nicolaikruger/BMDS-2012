@@ -18,14 +18,13 @@ public class Marshall {
 		}
 			return ret;
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	public static <T> T unMarshall(InputStream is, Class<T> c) {
 		T t = null;
 		try {
 			JAXBContext context = JAXBContext.newInstance(c);
 			Unmarshaller m = context.createUnmarshaller();
-			t = (T) m.unmarshal(is);
+			@SuppressWarnings("unchecked") t = (T) m.unmarshal(is);
 		} catch(JAXBException e) {
 			throw new RuntimeException(e);
 		}
