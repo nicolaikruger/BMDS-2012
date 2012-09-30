@@ -27,6 +27,10 @@ public class Calendar{
     private List<Task> tasks;
 
     public boolean hasTask(Task inT) {
+	if (tasks == null){
+		tasks = new LinkedList<Task>();
+		return false;
+	}
 	for (Task t : tasks) {
 		if (t.getId() == inT.getId()){
 			return true;

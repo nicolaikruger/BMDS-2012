@@ -9,8 +9,14 @@ import dk.itu.bmds.teamkolera.src.taskmanager.*;
 
 public class TaskManagerTCPClient {
 
-	Connection con = new Connection("127.0.0.1", 4444);
+	Connection con;
 
+	//open a connection to the given port on the given ip address
+	public TaskManagerTCPClient(String ip, int port) {
+		con = new Connection(ip, port);
+	}
+
+	//update a task in the remote calendar
 	public void put(Task t) {
 		con.writeString("PUT");
 		System.out.println(con.readString());
@@ -19,6 +25,7 @@ public class TaskManagerTCPClient {
 		System.out.println(con.readString());
 	}
 
+	//delete a task in the remote calendar
 	public void delete(Task t) {
 		con.writeString("DELETE");
 		System.out.println(con.readString());
@@ -27,6 +34,7 @@ public class TaskManagerTCPClient {
 		System.out.println(con.readString());
 	}
 
+	//print a list of tasks a given user is involved with
 	public void get(User u) {
 		con.writeString("GET");
 		System.out.println(con.readString());
@@ -44,23 +52,20 @@ public class TaskManagerTCPClient {
 		}
 	}
 
-	public void post() {
+	//add a task to the remote calendar
+	public void post(Task t) {
 		con.writeString("POST");
 		System.out.println(con.readString());
-		Task doShit = new Task("42", "Executed", "10-10-10", "Nicolai", "doShieeeeet");
-		String taskAsXML = Marshall.marshall(doShit);
+		String taskAsXML = Marshall.marshall(t);
 		con.writeString(taskAsXML);
 		System.out.println("Server responded: " + con.readString());
 		con.kill();
 	}
 
 	public static void main(String[] args) {
-		TaskManagerTCPClient client = new TaskManagerTCPClient();
-		//User u = new User("42", "rao", "42");
-		//client.get(u);
-		//Task t = new Task("assn-01-approve", "blah", "blah", "blah", "blah");
-		//client.delete(t);
-		Task t = new Task("assn-01-approve", "blah", "blah", "blah", "blah");
-		client.put(t);
+		TaskManagerTCPClient client = new TaskManagerTCPClient("127.0.0.1", 4444);
+		Task t = new Task("Do MDS Mandatory Exercise 1", "blah", "somedate", "Do MDS Mandatory Exercise 1", "do this shit");
+		t.attendants = "Kruger Dinesen Therkildsen Henriksen";
+		client.post(t);
 	}
 }

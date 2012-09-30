@@ -2,7 +2,6 @@ package dk.itu.bmds.teamkolera.src.lib;
 
 import javax.xml.bind.*;
 import java.io.*;
-import dk.itu.bmds.teamkolera.src.taskmanager.*; //for the testing in main()
 
 public class Marshall {
 	public static String marshall(Object o) {
@@ -34,12 +33,5 @@ public class Marshall {
 
 	public static <T> T unMarshall(String str, Class<T> c) {
 		return unMarshall(new ByteArrayInputStream(str.getBytes()), c);
-	}
-
-	public static void main(String[] args) {
-		User kruger = new User("42", "Nicolai", "MinPenis");
-		String krugerAsXML = marshall(kruger);
-		User who = unMarshall(krugerAsXML, User.class);
-		System.out.println(who);
 	}
 }

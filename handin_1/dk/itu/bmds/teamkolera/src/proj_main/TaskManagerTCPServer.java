@@ -18,14 +18,21 @@ import dk.itu.bmds.teamkolera.src.taskmanager.*;
 import dk.itu.bmds.teamkolera.src.lib.*;
 
 public class TaskManagerTCPServer {
-	Calendar cal;
-	Connection con;
+	private String store;
+	private Calendar cal;
+	private Connection con;
 
+	/**
+	 * Starts the server on port 4444
+	 *@param fPath path to xml store file
+	 */
 	public TaskManagerTCPServer(String fPath) {
-		cal = initRead(fPath);
+		store = fPath;
+		cal = initRead();
 		run();
 	}
 
+	//wait for connections, delegate responsibility for handling a call, repeat.
 	private void run() {
 		while(true) {
 			System.out.println("Server listens");
@@ -48,6 +55,7 @@ public class TaskManagerTCPServer {
 		}
 	}	
 
+	//update a task in cal
 	private void put(){
 		System.out.println("'PUT' recieved");
 		con.writeString("PUT");
@@ -58,13 +66,14 @@ public class TaskManagerTCPServer {
 		con.writeString(msg);
 	}
 
+	//send a list of tasks (TaskList) that a given user participates in
 	private void get(){
 		System.out.println("'GET' recieved");
 		con.writeString("GET");
 		String xml = con.readString();
 		String msg;
 
-		User u = Marshall.unMarshall(xml, User.class); //should take an id rather than a user
+		User u = Marshall.unMarshall(xml, User.class); 
 		TaskList ret = cal.userSched(u);
 		if(ret.tasks.isEmpty()) {
 			msg = "user has no tasks";
@@ -74,6 +83,8 @@ public class TaskManagerTCPServer {
 		con.writeString(msg);
 	}
 
+	//add task
+	//has poor integrety checks (will add tasks for nonexstisting users etc.)
 	private void post(){
 		System.out.println("'POST' recieved");
 		con.writeString("POST");
@@ -91,6 +102,8 @@ public class TaskManagerTCPServer {
 		con.writeString(msg);
 	}
 
+	//if a given task exists, delete it. respond with either success or task not found,
+	//+no real faliure message
 	private void del(){
 		System.out.println("'DELETE' recieved");;
 		con.writeString("DELETE");
@@ -106,6 +119,9 @@ public class TaskManagerTCPServer {
 		con.writeString(msg);
 	}
 
+	//start listening on port 4444
+	//call moved here from run() to give more controll over 
+	//+the binding call.
 	private void initListen(){
 		if (con != null) {
 			con.kill();
@@ -114,8 +130,9 @@ public class TaskManagerTCPServer {
 		con = new Connection(4444);
 	}
 
-	private Calendar initRead(String fPath){
-		File f = new File(fPath);
+	//returns a Calendar object deserialized from the xml file at [store]
+	private Calendar initRead(){
+		File f = new File(store);
 		Calendar ret = null;
 		try {
 			FileInputStream fis = new FileInputStream(f);
@@ -126,9 +143,10 @@ public class TaskManagerTCPServer {
 		return ret;
 	}
 
+	//save cal : Calendar to xml store file at [store]
 	private void save(){
 		try {
-			File f = new File("task-manager.xml");
+			File f = new File(store);
 			BufferedWriter out = new BufferedWriter(new FileWriter(f));
 			out.write(Marshall.marshall(cal));
 			out.close();
@@ -137,6 +155,7 @@ public class TaskManagerTCPServer {
 		}
 	}	
 
+	//Start the server.
 	public static void main(String[] args) {
 		if(args.length != 1) {
 			System.out.println("Params: [path to xmlStore document]");

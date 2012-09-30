@@ -1,0 +1,16 @@
+CLIENT:
+The client bears the mark of a test implementation.
+It not really usefull for other classes, as its methods wont return anything useful.
+It simply provides methods for trying out each of the server commands.
+
+SERVER:
+The server waits for connections, and excecutes the requested tasks.
+In its current state, the server has very poor consistancy checks (if any).
+the server provides no means to manager users. This was not specified in the assignment.
+
+ERATA:
+The servers GET command does not take a user id, as these are hardly used throughout the program (and where not used in the example XML file).
+Instead it takes a User object, and uses its name to validate against tasks. (a task doesnt contain user ids anyway).
+
+The project as a whole is not very robust, and will fail on several trivial forms of errors.
+We feel that this is okay, as the assignment seems to primarily concern network related issues, and not java error handling.

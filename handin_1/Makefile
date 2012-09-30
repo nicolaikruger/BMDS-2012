@@ -4,10 +4,10 @@ JC = javac
 
 default: main
 
-main: lib
+main: lib taskmanager
 	$(JC) $(JFLAGS) dk/itu/bmds/teamkolera/src/proj_main/*
 
-lib: taskmanager
+lib: 
 	$(JC) $(JFLAGS) dk/itu/bmds/teamkolera/src/lib/*
 
 taskmanager: 
