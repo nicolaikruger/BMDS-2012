@@ -52,6 +52,8 @@ public class TaskManagerTCPServer {
 						con.writeString("WHATYOUSAY?");
 						break;
 			}
+			
+			stopListen();
 		}
 	}	
 
@@ -123,11 +125,13 @@ public class TaskManagerTCPServer {
 	//call moved here from run() to give more controll over 
 	//+the binding call.
 	private void initListen(){
+		con = new Connection(4444);
+	}
+	
+	private void stopListen(){
 		if (con != null) {
 			con.kill();
 		}
-
-		con = new Connection(4444);
 	}
 
 	//returns a Calendar object deserialized from the xml file at [store]
