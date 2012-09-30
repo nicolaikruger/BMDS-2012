@@ -45,6 +45,8 @@ public class TaskManagerTCPServer {
 						con.writeString("WHATYOUSAY?");
 						break;
 			}
+			
+			stopListen();
 		}
 	}	
 
@@ -107,11 +109,13 @@ public class TaskManagerTCPServer {
 	}
 
 	private void initListen(){
+		con = new Connection(4444);
+	}
+	
+	private void stopListen(){
 		if (con != null) {
 			con.kill();
 		}
-
-		con = new Connection(4444);
 	}
 
 	private Calendar initRead(String fPath){
