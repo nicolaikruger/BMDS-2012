@@ -1,0 +1,5 @@
+import org.jgroups.*;
+
+public class TaskGroup {
+
+}

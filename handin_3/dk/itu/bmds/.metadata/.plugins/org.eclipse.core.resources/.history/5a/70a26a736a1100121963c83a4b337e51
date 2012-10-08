@@ -1,0 +1,41 @@
+
+import org.jgroups.*;
+
+// Ad-hoc class biatch
+public class TaskGroup extends ReceiverAdapter{
+	public static final String preFix = "Jmsg";	
+	
+	private JChannel channel = initChannel();
+	
+	private static JChannel initChannel(){
+		JChannel tmpChannel = null;
+		try{
+		tmpChannel = new JChannel();
+		}catch(Exception e){
+			System.out.println("WHATAFAK :O!");	
+		}
+		
+		return tmpChannel;
+	}
+	
+	public TaskGroup(){
+		channel.connect("TaskGroupKolera")
+	}
+	
+	public String put(String taskXml){
+		
+		
+	}
+	
+	public String get(String userXml){
+		
+	}
+	
+	public String post(String taskXml){
+		
+	}
+	
+	public String delete(String taskId){
+		
+	}
+}

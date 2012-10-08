@@ -1,0 +1,13 @@
+import org.jgroups.*;
+
+public class TaskGroup {
+	private static JChannel channel = initChannel("TaskGroupKolera");
+	
+	private static JChannel initChannel(String taskGroupName){
+		try{
+		JChannel tmpChannel = new JChannel(taskGroupName);
+		}catch(Exception e){
+			System.out.println("WHATAFAK :O!");	
+		}
+	}
+}
