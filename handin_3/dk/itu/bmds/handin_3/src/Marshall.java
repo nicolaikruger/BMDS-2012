@@ -1,5 +1,3 @@
-package dk.itu.bmds.teamkolera.src.lib;
-
 import javax.xml.bind.*;
 import java.io.*;
 
@@ -18,12 +16,13 @@ public class Marshall {
 			return ret;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> T unMarshall(InputStream is, Class<T> c) {
 		T t = null;
 		try {
 			JAXBContext context = JAXBContext.newInstance(c);
 			Unmarshaller m = context.createUnmarshaller();
-			@SuppressWarnings("unchecked") t = (T) m.unmarshal(is);
+			t = (T) m.unmarshal(is);
 		} catch(JAXBException e) {
 			throw new RuntimeException(e);
 		}

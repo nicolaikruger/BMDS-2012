@@ -1,4 +1,4 @@
-package dk.itu.bmds.teamkolera.src.taskmanager;
+
 
 import java.util.List;
 import java.util.LinkedList;

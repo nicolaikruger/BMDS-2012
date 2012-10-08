@@ -28,31 +28,10 @@ public class TMChannel extends ReceiverAdapter{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
+	}	
 	
-	public void put(String taskXml){
-		Message msg = new Message(null, PUT + taskXml);
-		try {
-			channel.send(msg);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}		
-	}
-	
-	public String get(String userXml){
-		
-	}
-	
-	public String post(String taskXml){
-		
-	}
-	
-	public String delete(String taskId){
-		
-	}
-	
-	public void send(String msg) {
-		Message msg = new Message(null, msg);
+	public void send(String message) {
+		Message msg = new Message(null, message);
 		try {
 			channel.send(msg);
 		} catch (Exception e) {
@@ -62,6 +41,21 @@ public class TMChannel extends ReceiverAdapter{
 	
 	@Override
 	public void receive(Message msg) {
-		
+		String message = (String) msg.getObject();
+		if(message.startsWith(PUT)){
+			tm.put(createReturn(message, PUT));
+		}else if(message.startsWith(POST)){
+			tm.post(createReturn(message, POST));
+		}else if(message.startsWith(GET)){
+			tm.get(createReturn(message, GET));
+		}else if(message.startsWith(DELETE)){
+			tm.del(createReturn(message, DELETE));
+		}
+	}
+	
+	private String createReturn(String input, String prefix)
+	{
+		input = input.substring(prefix.length());
+		return PREFIX + input;
 	}
 }

@@ -1,4 +1,3 @@
-package dk.itu.bmds.teamkolera.src.lib;
 
 import java.net.ServerSocket;
 import java.net.Socket;

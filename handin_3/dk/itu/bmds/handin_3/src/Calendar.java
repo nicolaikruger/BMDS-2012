@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package dk.itu.bmds.teamkolera.src.taskmanager;
+
 
 import java.util.List;
 import java.util.LinkedList;

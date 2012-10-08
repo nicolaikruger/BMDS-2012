@@ -1,0 +1,63 @@
+
+import org.jgroups.*;
+
+// Ad-hoc class biatch
+public class TMChannel extends ReceiverAdapter{
+	public static final String PREFIX = "JMSG";
+	private static final String PUT = "PUT", POST = "POST", GET = "GET", DELETE = "DELETE";
+	private TaskManager tm;
+	
+	private JChannel channel = initChannel();
+	
+	private static JChannel initChannel(){
+		JChannel tmpChannel = null;
+		try{
+		tmpChannel = new JChannel();
+		}catch(Exception e){
+			System.out.println("WHATAFAK :O!");	
+		}
+		
+		return tmpChannel;
+	}
+	
+	public TMChannel(TaskManager tm){
+		this.tm = tm;
+		try {
+			channel.connect("TaskGroupKolera");
+			channel.setReceiver(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}	
+	
+	public void send(String message) {
+		Message msg = new Message(null, message);
+		try {
+			channel.send(msg);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void receive(Message msg) {
+		String message = (String) msg.getObject();
+		if(message.startsWith(PUT)){
+			message = message.substring(PUT.length());
+			message = PREFIX + message;
+			tm.put(message);
+		}else if(message.startsWith(POST)){
+			message = message.substring(POST.length());
+			message = PREFIX + message;
+			tm.post(message);
+		}else if(message.startsWith(GET)){
+			message = message.substring(GET.length());
+			message = PREFIX + message;
+			tm.get(message);
+		}else if(message.startsWith(DELETE)){
+			message = message.substring(DELETE.length());
+			message = PREFIX + message;
+			tm.del(message);
+		}
+	}
+}
