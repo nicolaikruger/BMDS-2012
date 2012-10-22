@@ -19,8 +19,10 @@ public class HelloServiceClient {
         String endpointAddress = "http://localhost:8085/handin_2/";
         Service webservice = Service.create(service);
         webservice.addPort(port, SOAPBinding.SOAP11HTTP_BINDING, endpointAddress);
-        Stuff(webservice, port, "GetAttendantTasks", "rao", "3");
         
+        System.out.println("Get tasks...");
+        Stuff(webservice, port, "GetAttendantTasks", "rao", "3");
+        System.out.println("");
         String taskXml = "<task id=\"kolera\" name=\"lab exercises 01\" date=\"03-09-2012\" status=\"not-executed\"><description>Lab exercises for 1st week.</description><attendants>rao</attendants></task>";
   
         System.out.println("Create task...");
