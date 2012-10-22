@@ -20,18 +20,9 @@ public class TaskManager {
 	private TMChannel tg = new TMChannel(this);
 	private static final String PUT = "PUT", POST = "POST", GET = "GET", DELETE = "DELETE";
 
-	//Start the server.
-	public static void main(String[] args) {
-		if(args.length != 1) {
-			System.out.println("Params: [path to xmlStore document]");
-			System.exit(128);;
-		}
-		new TaskManager(args[0]);
-	}
-
 	/**
 	 * Starts the server on port 4444
-	 *@param fPath path to xml store file
+	 * @param fPath path to xml store file
 	 */
 	public TaskManager(String store) {
 		this.store = store;
