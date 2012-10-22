@@ -1,0 +1,5 @@
+LÆSMIGLÆSMIGLÆSMIGLÆSMIGLÆSMIGLÆSMIGLÆSMIGLÆSMIGLÆSMIGLÆSMIGLÆSMIGLÆSMIGLÆSMIGLÆSMIG
+The main method of the project lies within the TaskManager class.
+The main method contains simple "test" run fuctionality.
+It opens three TaskManager servers and tries out some of the TaskManager functionality, 
+by letting the user observe that changes are consistent across the three instances.
