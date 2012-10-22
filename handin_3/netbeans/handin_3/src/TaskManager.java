@@ -127,9 +127,9 @@ public class TaskManager {
 
 	//Start the server.
 	public static void main(String[] args) {
-		TaskManager t0 = new TaskManager("C:/Users\\Nicolai\\Documents\\GitHub\\BMDS-2012\\handin_3\\resources\\task-manager-store0.xml");
-		TaskManager t1 = new TaskManager("C:/Users\\Nicolai\\Documents\\GitHub\\BMDS-2012\\handin_3\\resources\\task-manager-store1.xml");
-		TaskManager t2 = new TaskManager("C:/Users\\Nicolai\\Documents\\GitHub\\BMDS-2012\\handin_3\\resources\\task-manager-store2.xml");
+		TaskManager t0 = new TaskManager("task-manager-store0.xml");
+		TaskManager t1 = new TaskManager("task-manager-store1.xml");
+		TaskManager t2 = new TaskManager("task-manager-store2.xml");
 		
 		System.out.println("Adds a new task (with attendant name \"Nicolai Krüger\", to TM-0");
 		Task task1 = new Task("Do MDS Mandatory Exercise 3", "blah", "somedate", "Do MDS Mandatory Exercise 3", "do this shit");
