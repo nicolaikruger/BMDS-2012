@@ -30,6 +30,10 @@ public class TaskManager {
 		cal = initRead();
 	}
 
+        /**
+         * Updates an existing task in the task manager (tasks are compared by their id)
+         * @param task object as xml  
+         */
 	public void put(String taskXml){
 		if(!taskXml.startsWith(TMChannel.PREFIX)){
 			tg.send(PUT + taskXml);
@@ -48,15 +52,23 @@ public class TaskManager {
 		save();
 	}
 
-	//send a list of tasks (TaskList) that a given user participates in
+        /**
+         * Get a list of tasks related to a given user.
+         * Tasks related to user will be determined from matching name of user with name of attandants of tasks)
+         * @param user object as xml
+         * @return List of tasks related to user
+         */
 	public List<Task> get(String userXml){		
 		User u = Marshall.unMarshall(userXml, User.class); 
 		return cal.userSched(u).tasks;
 	}
 
-	//add task
-	//has poor integrety checks (will add tasks for nonexstisting users etc.)
-	public void post(String taskXml){
+	/**
+         * Add a task to the task manager
+         * Method has poor integrety checks (will add tasks for nonexstisting users etc.)
+         * @param task object as xml 
+         */
+        public void post(String taskXml){
 		if(!taskXml.startsWith(TMChannel.PREFIX)){
 			tg.send(POST + taskXml);
 			try {
@@ -75,9 +87,11 @@ public class TaskManager {
 		}
 	}
 
-	//if a given task exists, delete it. respond with either success or task not found,
-	//+no real faliure message
-	public void del(String taskXml){
+	/**
+         * If a given task exists, delete it.
+         * @param taskXml 
+         */
+        public void del(String taskXml){
 		if(!taskXml.startsWith(TMChannel.PREFIX)){
 			tg.send(DELETE + taskXml);
 			try {
@@ -96,8 +110,10 @@ public class TaskManager {
 		}
 	}
 
-	//returns a Calendar object deserialized from the xml file at [store]
-	private Calendar initRead(){
+	/**
+         * @return a Calendar object deserialized from the xml file at [store]
+         */
+        private Calendar initRead(){
 		File f = new File(store);		
 		Calendar ret = null;
 		try {
@@ -113,8 +129,10 @@ public class TaskManager {
 		return ret;
 	}
 
-	//save cal : Calendar to xml store file at [store]
-	private void save(){
+	/**
+         * save cal : Calendar to xml store file at [store]
+         */
+        private void save(){
 		try {
 			File f = new File(store);
 			BufferedWriter out = new BufferedWriter(new FileWriter(f));
@@ -125,7 +143,7 @@ public class TaskManager {
 		}
 	}	
 
-	//Start the server.
+	//Simulated Client.
 	public static void main(String[] args) {
 		TaskManager t0 = new TaskManager("task-manager-store0.xml");
 		TaskManager t1 = new TaskManager("task-manager-store1.xml");
@@ -139,20 +157,26 @@ public class TaskManager {
 		System.out.println("Prints out Nicolai Krügers tasks from TM-1");
 		User kruger = new User("id", "Nicolai Kruger", "Why?");
 		List<Task> krugerTasks = t1.get(Marshall.marshall(kruger));
-		for(Task task : krugerTasks) {
-			System.out.println(Marshall.marshall(task));
+	
+                if(krugerTasks.isEmpty()){
+                    System.out.println("No tasks for Kruger");
+                } 
+                for(Task task : krugerTasks) {
+                    System.out.println(Marshall.marshall(task));
 		}
 		
 		System.out.println("Updates the task from TM-2, new attendant is \"Morten Therkildsen\"");
 		Task task2 = new Task("Do MDS Mandatory Exercise 3", "blah blah blah Bladt blah blah blah", "some other date", "Don't do MDS Mandatory Exercise 3", "do this shit");
 		task2.attendants = "Morten Therkildsen";
 		t2.put(Marshall.marshall(task2));
-		
-		
+				
 		System.out.println("Prints out Morten Therkildsen tasks from TM-0");
 		User morten = new User("id", "Morten Therkildsen", "Follet");
 		List<Task> mortenTasks = t0.get(Marshall.marshall(morten));
-		for(Task task : mortenTasks) {
+		if(mortenTasks.isEmpty()){
+                    System.out.println("No tasks for Morten"); 
+                }
+                for(Task task : mortenTasks) {
 			System.out.println(Marshall.marshall(task));
 		}
 		
@@ -162,8 +186,12 @@ public class TaskManager {
 		System.out.println("\nDoes Morten Therkildsen still contain the same tasks as before? Check with TM-2\n");
 		
 		mortenTasks = t2.get(Marshall.marshall(morten));
-		for(Task task : mortenTasks) {
-			System.out.println(Marshall.marshall(task));
+		if(mortenTasks.isEmpty()) {
+                    System.out.println("No tasks for Morten");
+                } 
+                    
+                for(Task task : mortenTasks) {
+                    System.out.println(Marshall.marshall(task));
 		}
 		System.out.println("I'm all done for now. See ya!");
 		System.exit(0);
