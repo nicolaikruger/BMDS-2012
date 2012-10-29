@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="org.jgroups.JChannel"/>
-<fullyQualifiedTypeName name="org.jgroups.ReceiverAdapter"/>
-<fullyQualifiedTypeName name="org.jgroups.util.TimeScheduler.Task"/>
-<fullyQualifiedTypeName name="TaskGroup"/>
-</qualifiedTypeNameHistroy>
