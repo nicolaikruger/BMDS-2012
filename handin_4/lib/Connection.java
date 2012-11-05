@@ -2,97 +2,144 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+package Server;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
- * @author Martin
+ * @author MrGreen
  */
 public class Connection {
 
-    public static DatagramSocket socket;
-    
-    public Connection() {
-        if(socket == null){
+    private final int SERVERPORT = 6000;
+    private final String DEFAULTSERVERADDRESS = "localhost";
+    private DatagramSocket socket;
+    private boolean isServer;
+    private Map<String, List<DatagramPacket>> packetByMessage;
+
+    /**
+     *
+     * @param isServer specify if this object represents is associated with a
+     * server (true) or a client (false)
+     */
+    public Connection(boolean isServer) {
+
+        try {
+            if (isServer) {
+                socket = new DatagramSocket(SERVERPORT);
+            } else {
+                socket = new DatagramSocket();
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        this.isServer = isServer;
+        packetByMessage = new HashMap<>();
+    }
+
+    /**
+     * Listen for incoming message. Used by both server and client. Note: This
+     * is a blocking call
+     *
+     * @return received message
+     */
+    public String receive() {
+        byte[] receiveData = new byte[256];
+        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+        try {
+            socket.receive(receivePacket);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        String receiveMessage = new String(receivePacket.getData());
+
+        List<DatagramPacket> associatedPackets = packetByMessage.get(receiveMessage);
+        if (associatedPackets == null) {
+            associatedPackets = new LinkedList<>();
+        }
+        associatedPackets.add(receivePacket);
+        packetByMessage.put(receiveMessage, associatedPackets);
+        return receiveMessage;
+    }
+
+    /**
+     * Respond to a message
+     *
+     * @param originalMessage The message originally received
+     * @param response The response
+     */
+    public void respond(String originalMessage, String response) {
+        List<DatagramPacket> associatedPackets = packetByMessage.get(originalMessage);
+        if (associatedPackets != null) {
+            for (DatagramPacket packet : associatedPackets) {
+                InetAddress IPAddress = packet.getAddress();
+                int port = packet.getPort();
+                try {
+                    send(response, IPAddress, port);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            packetByMessage.put(originalMessage, null);
+        }
+    }
+        
+    /**
+     * Send a message to the server. If this object is a server, this method has
+     * no effect
+     *
+     * Note: This method assumes the server is run locally
+     *
+     * @param message to the server
+     */
+    public void send(String message) {
+        if (!isServer) {
             try {
-                socket = new DatagramSocket(4445);
-            } catch (SocketException e) {
-                e.getStackTrace();
+                InetAddress IPAddress = InetAddress.getByName(DEFAULTSERVERADDRESS);
+                send(message, IPAddress, SERVERPORT);
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         }
     }
-    
-    /**   
-     * Wait for a request from a client 
-     * @param datagrampacket from a client
-     */
-    public DatagramPacket serverReceiveFromClient() {
-        byte[] buf = new byte[256];
-        DatagramPacket packet = new DatagramPacket(buf, buf.length);
-        
-        try {
-            socket.receive(packet);
-        } catch (IOException ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return packet;
-    }
-    
+
     /**
-     * Send a message to a client
-     * @param message to the client
-     * @param packet originally received from client
-     */
-    public void serverSendToClient(String message, DatagramPacket packet)
-    {
-      byte[] buf = message.getBytes();
-      DatagramPacket sendPacket = new DatagramPacket(buf, buf.length, packet.getAddress(), packet.getPort());
-        try {
-            socket.send(sendPacket);
-        } catch (IOException ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    /**
-     * Send a message to the server
+     * Send a message to the server. If this object is a server, this method has
+     * no effect
+     *
      * @param message to the server
-     * @return response from server
      */
-    public String clientSendToServer(String message){
-        byte[] buff = new byte[message.getBytes().length];
-                
-        try {
-            DatagramPacket serverPacket = new DatagramPacket(buff, buff.length, socket.getLocalSocketAddress());
-            socket.send(serverPacket);        
-        } catch (Exception ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-        }   
-        String response = "";
-        try {
-            DatagramSocket receiveSocket = new DatagramSocket();
-            buff = new byte[256];
-            DatagramPacket receivePacket = new DatagramPacket(buff, buff.length);
-            receiveSocket.receive(receivePacket);
-            response = (String) new ObjectInputStream(new ByteArrayInputStream(receivePacket.getData())).readObject();
-            
-        } catch (IOException | ClassNotFoundException ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+    public void send(String message, String serverAddress) {
+        if (!isServer) {
+            try {
+                InetAddress IPAddress = InetAddress.getByName(serverAddress);
+                send(message, IPAddress, SERVERPORT);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
-        return response;
     }
-    
-    public static void main(String[] args)
-    {
-       
+
+    /**
+     * Send a message to another process with the specified address and port
+     * 
+     * @param message The message to send
+     * @param IPAddress The address of the end point process
+     * @param port The port associated with the end point process
+     * @throws IOException If an I/O error occurs.
+     */
+    private void send(String message, InetAddress IPAddress, int port) throws IOException {
+        byte[] sendData = message.getBytes();
+        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+        socket.send(sendPacket);
     }
 }
