@@ -4,6 +4,7 @@
  */
 
 
+package server;
 import java.util.List;
 import java.util.LinkedList;
 import javax.xml.bind.annotation.XmlElement;
@@ -26,17 +27,20 @@ public class Calendar{
     @XmlElement(name = "task")
     private List<Task> tasks;
 
-    public boolean hasTask(Task inT) {
-	if (tasks == null){
-		tasks = new LinkedList<Task>();
-		return false;
-	}
-	for (Task t : tasks) {
-		if (t.getId() == inT.getId()){
-			return true;
+    public boolean hasTask(Task t) {
+	    Task getT = getTask(t.getId());
+	    if (getT == null) return false;
+	    return true;
+    }
+
+
+    public Task getTask(String id) {
+	    for (Task t : tasks) {
+		if(t.getId().equals(id)) {
+			return t;
 		}
-	}
-	return false;
+	    }
+	    return null;
     }
 
     //currently accepts invalid users

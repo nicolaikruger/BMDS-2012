@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package Server;
+package lib;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -60,7 +60,7 @@ public class Connection {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        String receiveMessage = new String(receivePacket.getData());
+        String receiveMessage = new String(java.util.Arrays.copyOf(receivePacket.getData(), receivePacket.getLength()));
 
         List<DatagramPacket> associatedPackets = packetByMessage.get(receiveMessage);
         if (associatedPackets == null) {
