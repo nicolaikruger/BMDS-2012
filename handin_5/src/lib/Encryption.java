@@ -10,6 +10,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.NoSuchAlgorithmException;
 import java.security.InvalidKeyException;
 import java.io.UnsupportedEncodingException;
+import org.apache.commons.codec.binary.Base64;
 
 public class Encryption {
 	private static final String SCHEME = "DES";
@@ -18,7 +19,7 @@ public class Encryption {
 
 	public Encryption() {
 		try {
-			skf = SecretKeyFactory.getInstance(SCHEME);
+			skf = SecretKeyFactory.getInstance("DES");
 			enigma = Cipher.getInstance(SCHEME);
 		}catch(NoSuchAlgorithmException | NoSuchPaddingException e) {
 			
@@ -31,8 +32,20 @@ public class Encryption {
 		try {
 			enigma.init(Cipher.ENCRYPT_MODE, getKey(key));
 			byte[] cipherBytes = enigma.doFinal(stringTBytes(plain));
-			encRet = byteTString(cipherBytes);
+			encRet = new String(Base64.encodeBase64(cipherBytes));
+		}catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+			throw new RuntimeException(e);
+		}
+		return encRet;
+	}
 
+	public String decrypt(String key, String plain) {
+		String encRet = null;
+		try {
+			enigma.init(Cipher.DECRYPT_MODE, getKey(key));
+			byte[] cipherBytes = Base64.decodeBase64(plain);
+			byte[] plainBytes = enigma.doFinal(cipherBytes);
+			encRet = new String(plainBytes);
 		}catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
 			throw new RuntimeException(e);
 		}
@@ -50,30 +63,13 @@ public class Encryption {
 		return sk;
 	}
 
-	private byte[] stringTBytes(String s){
-		byte[] ret = null;
-		try {
-			ret = s.getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-		return ret;
-	}	
-
-	private String byteTString(byte[] a){
-		String ret = null;
-		try {
-			ret = new String(a, "UTF-8");
-		}catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-		return ret;
-	}
-
 	public static void main(String[] args) {
 		Encryption e = new Encryption();
 		String plain = "Hej lars";
 		String cipher = e.encrypt("OMGSECRET!", plain);
-		System.out.println(cipher);
+		String decPlain = e.decrypt("OMGSECRET!", cipher);
+		System.out.println("plain:\t\t\t" + plain);
+		System.out.println("cipher:\t\t\t" + cipher);
+		System.out.println("deciphered:\t" + decPlain);
 	}
 }
