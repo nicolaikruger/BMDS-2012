@@ -33,7 +33,7 @@ public class Encryption {
 		String encRet = null;
 		try {
 			enigma.init(Cipher.ENCRYPT_MODE, getKey(key));
-			byte[] cipherBytes = enigma.doFinal(stringTBytes(plain));
+			byte[] cipherBytes = enigma.doFinal(plain.getBytes());
 			encRet = new String(Base64.encodeBase64(cipherBytes));
 		}catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
 			throw new RuntimeException(e);
@@ -57,7 +57,7 @@ public class Encryption {
 	private SecretKey getKey(String k) {
 		SecretKey sk = null;
 		try {
-			KeySpec keyspec = new DESKeySpec(stringTBytes(k));
+			KeySpec keyspec = new DESKeySpec(k.getBytes());
 			sk = skf.generateSecret(keyspec);
 		} catch(InvalidKeyException | InvalidKeySpecException e) {
 			throw new RuntimeException(e);
