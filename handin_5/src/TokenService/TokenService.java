@@ -5,16 +5,21 @@ import java.util.Hashtable;
 import javax.naming.*;
 import javax.naming.directory.*;
 import lib.Connection;
+import lib.Encryption;
         
 public class TokenService {
     private Hashtable ht;
+    private Encryption e;
     
     public TokenService(){
         ht = new Hashtable(11);
         ht.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+	ht.put("com.sun.jndi.ldap.connect.timeout", "1000");
         ht.put(Context.PROVIDER_URL, "ldap://ldap2.itu.dk:389/");
         ht.put(Context.SECURITY_AUTHENTICATION, "simple"); 
         
+	e= new Encryption();
+
         run();
     }
     
@@ -45,17 +50,21 @@ public class TokenService {
         }
         catch(NamingException e)
         {
-            return false;
+	    System.out.println("TokenService currently pretends everybody is authenticated");
+            return true;
+            //return false;
         }
     }
     
     private String getMsg(String userId, String pass) {
-        String password = pass; //Should be decrypted with client key.
+	KeyChain kc = new KeyChain();
+	String key = kc.getKey(userId);
+        String password = e.decrypt(key, pass); 
         String returnMsg = "Error: Could not authenticate!";
         if(login(userId, password)) {
             String role = RoleFactory.getRole(userId);
             long timeStamp = System.currentTimeMillis() + (300000); // 5 min.
-            returnMsg = role + "," + timeStamp; // Should be encrypted with server key
+            returnMsg = e.encrypt(key, e.encrypt(kc.getKey("server"), role + "," + timeStamp)); // Should be encrypted with server key
         }
         
         // Return msg should be encrypted with client key

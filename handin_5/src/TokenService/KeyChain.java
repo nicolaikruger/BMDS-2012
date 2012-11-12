@@ -11,6 +11,7 @@ public class KeyChain{
 		keys.put("rahr",   	"6c4a19bfbdf448170b7e79c5cced38e4");
 		keys.put("jesan",  	"410e01ffba2d0c65f460303d7299744d");
 		keys.put("sidi",	"8be9a88806c1a86350c177ed566ef30b");
+		keys.put("server",	"fde992eee6f2f6c4dc3eeb82f82b13e6");
 	}
 
 	public String getKey(String name) {

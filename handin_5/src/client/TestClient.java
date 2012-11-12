@@ -24,6 +24,7 @@ public class TestClient {
 	password = e.encrypt(key, password);
 
         try {
+	    System.out.println(username + "," + password);
             con.send(username + "," + password, "localhost", 7777);
             String returnsMsg = e.decrypt(key, con.receive());
             System.out.println(returnsMsg);
