@@ -54,7 +54,7 @@ public class TokenService {
         String returnMsg = "Error: Could not authenticate!";
         if(login(userId, password)) {
             String role = RoleFactory.getRole(userId);
-            long timeStamp = System.currentTimeMillis() + (1000*60*5); // 5 min.
+            long timeStamp = System.currentTimeMillis() + (300000); // 5 min.
             returnMsg = role + "," + timeStamp; // Should be encrypted with server key
         }
         
