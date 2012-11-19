@@ -8,10 +8,12 @@ import lib.*;
 import server.*;
 
 public class ConcurrencyServ {
+	private final String key = "fde992eee6f2f6c4dc3eeb82f82b13e6";
 	BlockingQueue<Task> q = new LinkedBlockingQueue<>(100); //arbitrary limit FTW
-	Connection con = new Connection(66666);
+	Connection con = new Connection(666);
 	private String xmlStore; 
 	private Calendar cal;
+	private Encryption e = new Encryption();
 
 	public ConcurrencyServ(String xmlStorePath){
 		xmlStore=xmlStorePath;
@@ -20,11 +22,38 @@ public class ConcurrencyServ {
 		listen();
 	}
 
+	private String[] sanitizeMsg(String msg){
+		String[] spl = msg.split(",");
+		String token = e.decrypt(key, spl[1]);
+		String timeStmp = token.split(",")[1];
+		token = token.split(",")[0];
+		return new String[] {spl[0], token, timeStmp};
+	}
+
+	private boolean validate(String[] msg, Task t) {
+		if (! t.getRole().contains(msg[1])){
+			return false;
+		}
+		if (System.currentTimeMillis() > Integer.parseInt(msg[2]) ) {
+			return false;
+		}
+		return true;
+	}
+
 	private void listen(){
 		while(true) {
+			System.out.println("(t)rolling");
 			String req = con.receive();
 			System.out.println("Server got:" + req);
+			String[] sanitReq = sanitizeMsg(req);
+			req = sanitReq[0];
+
 			Task t = cal.getTask(req);
+			if (! validate(sanitReq, t)) {
+				con.respond(req, "Could not validate token");
+				continue;
+			}
+
 			if (t == null) {
 				con.respond(req, "No task with id: " + req);
 				return;

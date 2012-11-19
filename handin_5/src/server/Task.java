@@ -35,6 +35,8 @@ public class Task{
     private String conditions;
     @XmlElement(name="responses")
     private String responses;
+    @XmlElement(name="role")
+    private String role;
 
     public Task(){}
     
@@ -100,6 +102,10 @@ public class Task{
 		ret[i] = ret[i].trim();
 	}
 	return ret;
+    }
+
+    public String getRole(){
+	return role;
     }
    // public void setAttendant(Attendant attendant){
    //     this.attendants = attendant;

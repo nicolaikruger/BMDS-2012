@@ -50,9 +50,7 @@ public class TokenService {
         }
         catch(NamingException e)
         {
-	    System.out.println("TokenService currently pretends everybody is authenticated");
-            return true;
-            //return false;
+            return false;
         }
     }
     
@@ -64,10 +62,8 @@ public class TokenService {
         if(login(userId, password)) {
             String role = RoleFactory.getRole(userId);
             long timeStamp = System.currentTimeMillis() + (300000); // 5 min.
-            returnMsg = e.encrypt(key, e.encrypt(kc.getKey("server"), role + "," + timeStamp)); // Should be encrypted with server key
+            returnMsg = e.encrypt(key, e.encrypt(kc.getKey("server"), role + "," + timeStamp)); 
         }
-        
-        // Return msg should be encrypted with client key
         return returnMsg;
     }
     

@@ -36,7 +36,7 @@ public class Connection {
 
         try {
             socket = new DatagramSocket(SERVERPORT);
-            System.out.println("Running on: " + socket.getInetAddress());
+            System.out.println("Running on: " + port);
         } catch (SocketException e) {
             e.printStackTrace();
         }
@@ -58,6 +58,7 @@ public class Connection {
             ex.printStackTrace();
         }
         String receiveMessage = new String(java.util.Arrays.copyOf(receivePacket.getData(), receivePacket.getLength()));
+	System.out.println("JEG LEEEEVER!");
 
         List<DatagramPacket> associatedPackets = packetByMessage.get(receiveMessage);
         if (associatedPackets == null) {
