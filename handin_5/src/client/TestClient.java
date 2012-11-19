@@ -37,6 +37,7 @@ public class TestClient {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+	con.close();
 	return returnMsg;
     }
 
@@ -47,7 +48,8 @@ public class TestClient {
 
     private void send(String msg) {
 	Connection con = new Connection(5555);
-	con.send(msg, "localhost", 666);
+	con.send(msg, "localhost", 6666);
+	con.close();
     }
 
     public static void main(String[] args){
@@ -55,5 +57,6 @@ public class TestClient {
 
         String token = tc.authenticate();
 	String msg = tc.piggyB(token);
+	tc.send(msg);
     }
 }

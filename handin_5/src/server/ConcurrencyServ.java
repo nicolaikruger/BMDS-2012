@@ -10,7 +10,7 @@ import server.*;
 public class ConcurrencyServ {
 	private final String key = "fde992eee6f2f6c4dc3eeb82f82b13e6";
 	BlockingQueue<Task> q = new LinkedBlockingQueue<>(100); //arbitrary limit FTW
-	Connection con = new Connection(666);
+	Connection con = new Connection(6666);
 	private String xmlStore; 
 	private Calendar cal;
 	private Encryption e = new Encryption();
@@ -34,7 +34,7 @@ public class ConcurrencyServ {
 		if (! t.getRole().contains(msg[1])){
 			return false;
 		}
-		if (System.currentTimeMillis() > Integer.parseInt(msg[2]) ) {
+		if (System.currentTimeMillis() > Long.parseLong(msg[2]) ) {
 			return false;
 		}
 		return true;
@@ -42,7 +42,6 @@ public class ConcurrencyServ {
 
 	private void listen(){
 		while(true) {
-			System.out.println("(t)rolling");
 			String req = con.receive();
 			System.out.println("Server got:" + req);
 			String[] sanitReq = sanitizeMsg(req);

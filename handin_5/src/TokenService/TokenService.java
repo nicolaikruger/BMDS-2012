@@ -10,6 +10,7 @@ import lib.Encryption;
 public class TokenService {
     private Hashtable ht;
     private Encryption e;
+    static private KeyChain kc = new KeyChain();
     
     public TokenService(){
         ht = new Hashtable(11);
@@ -55,13 +56,13 @@ public class TokenService {
     }
     
     private String getMsg(String userId, String pass) {
-	KeyChain kc = new KeyChain();
 	String key = kc.getKey(userId);
         String password = e.decrypt(key, pass); 
         String returnMsg = "Error: Could not authenticate!";
         if(login(userId, password)) {
             String role = RoleFactory.getRole(userId);
             long timeStamp = System.currentTimeMillis() + (300000); // 5 min.
+	    System.out.println(timeStamp);
             returnMsg = e.encrypt(key, e.encrypt(kc.getKey("server"), role + "," + timeStamp)); 
         }
         return returnMsg;
@@ -70,6 +71,9 @@ public class TokenService {
     public static void main(String[] args)
     {
         TokenService ts = new TokenService();
+	if (args.length != 0 ){
+		kc.addKey(args[0], args[1]);
+	}
         System.out.println(ts.login("", ""));
     }
 }

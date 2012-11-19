@@ -58,7 +58,6 @@ public class Connection {
             ex.printStackTrace();
         }
         String receiveMessage = new String(java.util.Arrays.copyOf(receivePacket.getData(), receivePacket.getLength()));
-	System.out.println("JEG LEEEEVER!");
 
         List<DatagramPacket> associatedPackets = packetByMessage.get(receiveMessage);
         if (associatedPackets == null) {
@@ -144,5 +143,9 @@ public class Connection {
         byte[] sendData = message.getBytes();
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
         socket.send(sendPacket);
+    }
+
+    public void close() {
+	socket.close();
     }
 }
